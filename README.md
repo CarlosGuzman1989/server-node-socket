@@ -7,7 +7,7 @@ npm install
 tsc -w
 ```
 ```
-Csualquiera de los 2
+Cualquiera de los 2
 nodemon dist/
 node/dist
 ```
