@@ -1,42 +1,46 @@
-import  express  from 'express';
+import express from 'express';
 import { SERVER_PORT } from '../global/environment';
 import socketIO from 'socket.io';
 import http from 'http';
-import * as socket  from '../sockets/sockets';
+import * as socket from '../sockets/sockets';
 
 
-export default class Server{
+export default class Server {
     private static _instance: Server;
     public app: express.Application;
     public port: number;
 
-    public io : socketIO.Server;
+    public io: socketIO.Server;
     private httpServer: http.Server;
 
-    private constructor(){
+    private constructor() {
         this.app = express();
         this.port = SERVER_PORT;
-        this.httpServer = new http.Server(this.app); 
-        this.io = socketIO( this.httpServer );
+        this.httpServer = new http.Server(this.app);
+        this.io = socketIO(this.httpServer);
         this.escucharSocket();
     }
-    public static get instance(){
+    public static get instance() {
         return this._instance || (this._instance = new this());
     }
-    private escucharSocket(){
+    private escucharSocket() {
         console.log('escuchando socket');
 
-        this.io.on('connection', cliente =>{
-            console.log('cliente conectado');
+        this.io.on('connection', cliente => { 
+            // console.log(cliente.id);
 
-        // DESCONECTAR
-        socket.desconectar(cliente);  
-        socket.mensaje(cliente, this.io);
+            // CONECTAR CLIENTE 
+            socket.conectarCliente(cliente);
+
+            socket.usuario(cliente, this.io);
             
+            socket.desconectar(cliente);
+            socket.mensaje(cliente, this.io);
+
         })
-        
+
     }
-    start( callback: any){
-        this.httpServer.listen(this.port, callback );
+    start(callback: any) {
+        this.httpServer.listen(this.port, callback);
     }
 }
